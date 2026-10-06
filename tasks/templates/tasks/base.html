@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Task Manager{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'tasks/style.css' %}">
+</head>
+<body>
+<header class="navbar">
+    <div class="container nav-inner">
+        <a class="brand" href="{% url 'task_list' %}">Student Task Manager</a>
+        <a class="button button-small" href="{% url 'task_create' %}">+ Add Task</a>
+    </div>
+</header>
+<main class="container">
+    {% for message in messages %}
+        <div class="message">{{ message }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+</main>
+<footer class="footer">Django FDS Practical Project • Built for learning</footer>
+</body>
+</html>

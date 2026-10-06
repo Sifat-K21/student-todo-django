@@ -1,0 +1,59 @@
+{% extends 'tasks/base.html' %}
+{% block title %}Tasks | Student Task Manager{% endblock %}
+{% block content %}
+<section class="hero">
+    <div>
+        <h1>My Tasks</h1>
+        <p>Simple task management for college work and daily activities.</p>
+    </div>
+    <a class="button" href="{% url 'task_create' %}">Create Task</a>
+</section>
+
+<section class="stats">
+    <div class="stat"><strong>{{ total_count }}</strong><span>Total</span></div>
+    <div class="stat"><strong>{{ pending_count }}</strong><span>Pending</span></div>
+    <div class="stat"><strong>{{ completed_count }}</strong><span>Completed</span></div>
+</section>
+
+<form class="filters" method="get">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search by task title">
+    <select name="status">
+        <option value="all" {% if status == 'all' %}selected{% endif %}>All tasks</option>
+        <option value="pending" {% if status == 'pending' %}selected{% endif %}>Pending</option>
+        <option value="completed" {% if status == 'completed' %}selected{% endif %}>Completed</option>
+    </select>
+    <button class="button" type="submit">Filter</button>
+    <a class="clear-link" href="{% url 'task_list' %}">Clear</a>
+</form>
+
+<div class="task-list">
+{% for task in tasks %}
+    <article class="task-card {% if task.completed %}done{% endif %}">
+        <div class="task-main">
+            <div class="title-row">
+                <h2>{{ task.title }}</h2>
+                <span class="badge {{ task.priority|lower }}">{{ task.priority }}</span>
+            </div>
+            {% if task.description %}<p>{{ task.description }}</p>{% endif %}
+            <small>
+                {% if task.due_date %}Due: {{ task.due_date|date:'d M Y' }}{% else %}No due date{% endif %}
+                • {% if task.completed %}Completed{% else %}Pending{% endif %}
+            </small>
+        </div>
+        <div class="actions">
+            <form method="post" action="{% url 'task_toggle' task.pk %}">
+                {% csrf_token %}
+                <button class="link-button" type="submit">{% if task.completed %}Undo{% else %}Complete{% endif %}</button>
+            </form>
+            <a class="link-button" href="{% url 'task_edit' task.pk %}">Edit</a>
+            <form method="post" action="{% url 'task_delete' task.pk %}" onsubmit="return confirm('Delete this task?');">
+                {% csrf_token %}
+                <button class="link-button danger" type="submit">Delete</button>
+            </form>
+        </div>
+    </article>
+{% empty %}
+    <div class="empty">No tasks found. Create your first task.</div>
+{% endfor %}
+</div>
+{% endblock %}
